@@ -1,0 +1,8 @@
+{
+    "name": "state-machine-js",
+    "version": "0.0.0",
+    "dependencies": {
+        "js-signals": "1.0.0",
+        "requirejs": "latest"
+    }
+}
