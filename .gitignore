@@ -32,4 +32,4 @@ user.properties
 
 node_modules/
 tmp/
-js/vendors/
+src/vendors/

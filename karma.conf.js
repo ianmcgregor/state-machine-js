@@ -10,21 +10,17 @@ module.exports = function(config) {
     plugins: [
       'karma-mocha',
       'karma-chai',
-      'karma-requirejs',
+      'karma-bro',
       'karma-chrome-launcher',
       'karma-firefox-launcher'
     ],
 
-
     // frameworks to use
-    frameworks: ['requirejs', 'mocha', 'chai'],
-
+    frameworks: ['browserify', 'mocha', 'chai'],
 
     // list of files / patterns to load in the browser
     files: [
-      'test/test-main.js',
-      {pattern: 'js/**/*.js', included: false},
-      {pattern: 'test/**/*.js', included: false}
+      'test/**/*.js'
     ],
 
 
@@ -32,6 +28,19 @@ module.exports = function(config) {
     exclude: [
       
     ],
+
+    // Browserify config (all optional)
+    browserify: {
+      // extensions: ['.coffee'],
+      // ignore: [],
+      // transform: ['coffeeify'],
+      // debug: true,
+      // noParse: ['jquery'],
+      // watch: true
+    },
+
+    // Add browserify to preprocessors
+    preprocessors: {'test/**/*.js': ['browserify']},
 
 
     // test results reporter to use
