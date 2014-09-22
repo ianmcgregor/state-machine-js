@@ -1,6 +1,6 @@
 'use strict';
 
-var StateMachine = require('../src/utils/state-machine.js');
+var StateMachine = require('../src/main.js');
 
 describe('state machine', function() {
 

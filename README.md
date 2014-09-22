@@ -2,7 +2,7 @@
 
 Finite State Machine
 
-A utility that allows you to define states and actions to transition between them.
+A simple utility that allows you to define states and actions to transition between them.
 
 ### Setup:
 
@@ -15,7 +15,7 @@ $ bower install
 To run tests:
 
 ```
-$ npm install -g karma
+$ npm install -g karma-cli
 $ npm install
 $ karma start
 ```

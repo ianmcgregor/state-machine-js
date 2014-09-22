@@ -1,7 +1,25 @@
 {
-    "name": "state-machine-js",
-    "version": "0.0.1",
-    "dependencies": {
-        "js-signals": "1.0.0"
-    }
+  "name": "state-machine-js",
+  "version": "0.0.2",
+  "homepage": "https://github.com/ianmcgregor/state-machine-js",
+  "authors": [
+    "ianmcgregor"
+  ],
+  "description": "A simple utility that allows you to define states and actions to transition between them",
+  "main": "dist/state-machine.min.js",
+  "moduleType": [
+    "node",
+    "amd",
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "devDpendencies": {
+    "js-signals": "1.0.0"
+  }
 }

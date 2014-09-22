@@ -1,6 +1,6 @@
 'use strict';
 
-var signals = signals || require('signals');
+var signals = require('signals');
 
 /*
  * StateMachine
@@ -351,6 +351,4 @@ StateMachine.DebugView = function(fsm) {
 	return container;
 };
 
-if(typeof module === 'object' && module.exports) {
-	module.exports = StateMachine;
-}
+module.exports = StateMachine;
