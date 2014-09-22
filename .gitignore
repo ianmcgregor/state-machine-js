@@ -3,6 +3,7 @@
 .*
 !/.gitignore
 !/.bowerrc
+!/.travis.yml
 
 Icon?
 ehthumbs.db
