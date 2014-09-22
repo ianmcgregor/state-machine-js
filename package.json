@@ -9,7 +9,7 @@
   ],
   "main": "dist/state-machine.min.js",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers phantomjs"
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
   },
   "readmeFilename": "README.md",
   "repository": {
