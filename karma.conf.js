@@ -11,8 +11,7 @@ module.exports = function(config) {
       'karma-mocha',
       'karma-chai',
       'karma-bro',
-      'karma-chrome-launcher',
-      'karma-firefox-launcher'
+      'karma-phantomjs-launcher'
     ],
 
     // frameworks to use
@@ -74,8 +73,7 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
     browsers: [
-        'Chrome',
-        'Firefox'
+        'PhantomJS'
     ],
 
 
