@@ -7,23 +7,12 @@ Finite State Machine
 
 A simple utility that allows you to define states and actions to transition between them.
 
-### Setup:
+### Installation
 
-To install dependencies:
+* npm: ```npm install state-machine-js --save-dev```
+* bower: ```bower install state-machine-js --save-dev```
 
-```
-$ bower install
-```
-
-To run tests:
-
-```
-$ npm install -g karma-cli
-$ npm install
-$ karma start
-```
-
-### Example configuration:
+### Usage
 
 ```
 var config = [
@@ -82,4 +71,20 @@ You can also add callbacks to individual states:
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
 }
+```
+
+### Dev Setup
+
+To install dependencies:
+
+```
+$ bower install
+```
+
+To run tests:
+
+```
+$ npm install -g karma-cli
+$ npm install
+$ karma start
 ```
