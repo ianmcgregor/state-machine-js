@@ -55,8 +55,8 @@ describe('state machine', function() {
 			]
 		}
 	];
-	
-	stateMachine.factory.addMultiple(config);
+
+	stateMachine.create(config);
 	stateMachine.onChange.add(function(state, data) {
 		stateChangedTo = state;
 		stateData = data;
@@ -64,7 +64,13 @@ describe('state machine', function() {
 	stateMachine.start();
 
 	it('should have 3 states', function() {
-		expect(stateMachine.factory.getTotal()).to.eql(3);
+		expect(stateMachine.getTotal()).to.eql(3);
+	});
+
+
+	it('should have 4 states', function() {
+		stateMachine.create({ name: 'FOO', transitions: [] });
+		expect(stateMachine.getTotal()).to.eql(4);
 	});
 
 	it('should return initial state', function() {

@@ -15,7 +15,6 @@ function StateMachine() {
 	this._hasChanged = false;
 	this._actionQueue = [];
 	this._history = [];
-	this._factory = new StateMachine.Factory(this);
 	this._onChange = new signals.Signal();
 }
 
@@ -66,12 +65,12 @@ StateMachine.prototype = {
 			this._cancelled = false;
 			return;
 		}
-		
+
 		// Enter next State
 		if ( nextState.onEnter.getNumListeners() > 0 ) {
 			nextState.onEnter.dispatch(data);
 		}
-		
+
 		// Has transition been been cancelled on Enter guard?
 		if ( this._cancelled ) {
 			this._cancelled = false;
@@ -86,13 +85,13 @@ StateMachine.prototype = {
 
 		// Update current state now both guards have been passed
 		this._currentState = nextState;
-		
-		// Dispatch specific Change notification for this State 
+
+		// Dispatch specific Change notification for this State
 		if ( nextState.onChange.getNumListeners() > 0 ) {
 			nextState.onChange.dispatch(data);
 		}
 
-		// Dispatch general Change notification 
+		// Dispatch general Change notification
 		this._onChange.dispatch(this._currentState.name, data);
 
 		// Set hasChanged flag to true
@@ -136,6 +135,35 @@ StateMachine.prototype = {
 	},
 	getState: function(stateName) {
 		return this._states[stateName];
+	},
+	create: function(config) {
+		if(config instanceof Array) {
+			config.forEach(function(item) {
+				this.create(item);
+			}, this);
+			return;
+		}
+		var state = new StateMachine.State(config.name);
+		var transitions = config.transitions;
+		if(transitions) {
+			for (var i = 0; i < transitions.length; i++) {
+				state.addTransition(transitions[i].action, transitions[i].target);
+				if(typeof config.onChange === 'function') {
+					state.onChange.add(config.onChange);
+				}
+				if(typeof config.onEnter === 'function') {
+					state.onEnter.add(config.onEnter);
+				}
+				if(typeof config.onExit === 'function') {
+					state.onExit.add(config.onExit);
+				}
+			}
+		}
+		var isInitial = this.getTotal() === 0 || config.initial;
+		return this.addState(state, isInitial);
+	},
+	getTotal: function() {
+		return Object.keys(this.states).length;
 	}
 };
 
@@ -239,61 +267,6 @@ Object.defineProperty(StateMachine.State.prototype, 'onExit', {
 });
 
 /*
- * Factory
- */
-
-StateMachine.Factory = function(fsm) {
-	this.fsm = fsm;
-};
-
-StateMachine.Factory.prototype = {
-	add: function(config) {
-		var state = new StateMachine.State(config.name);
-		var transitions = config.transitions;
-		if(transitions) {
-			for (var i = 0; i < transitions.length; i++) {
-				state.addTransition(transitions[i].action, transitions[i].target);
-				if(typeof config.onChange === 'function') {
-					state.onChange.add(config.onChange);
-				}
-				if(typeof config.onEnter === 'function') {
-					state.onEnter.add(config.onEnter);
-				}
-				if(typeof config.onExit === 'function') {
-					state.onExit.add(config.onExit);
-				}
-			}
-		}
-		var isInitial = this.getTotal() === 0 || config.initial;
-		this.fsm.addState(state, isInitial);
-	},
-	addMultiple: function(arr) {
-		for (var i = 0; i < arr.length; i++) {
-			this.add(arr[i]);
-		}
-	},
-	create: function(name, transitions, isInitial) {
-		var state = new StateMachine.State(name);
-		if(transitions !== undefined) {
-			for (var i = 0; i < transitions.length; i++) {
-				state.addTransition(transitions[i].action, transitions[i].target);
-			}
-		}
-		this.fsm.addState(state, isInitial);
-		return state;
-	},
-	getTotal: function() {
-		var i = 0;
-		for(var key in this.fsm.states) {
-			if(this.fsm.states.hasOwnProperty(key) && this.fsm.states[key] !== null){
-				i++;
-			}
-		}
-		return i;
-	}
-};
-
-/*
  * Debug View
  */
 
@@ -324,7 +297,7 @@ StateMachine.DebugView = function(fsm) {
 		var d = document.createElement('div');
 		d.setAttribute('data-state', s.name);
 		d.style.display = 'none';
-		
+
 		var h = document.createElement('h3');
 		h.innerHTML = 'State: ' + s.name;
 		d.appendChild(h);
