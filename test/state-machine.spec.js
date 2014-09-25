@@ -56,20 +56,30 @@ describe('state machine', function() {
 		}
 	];
 
-	stateMachine.create(config);
-	stateMachine.onChange.add(function(state, data) {
-		stateChangedTo = state;
-		stateData = data;
-	});
-	stateMachine.start();
+  it('should have a chainable create() method when passing multiple state config', function() {
+    var returnValue = stateMachine.create(config);
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
+
+  it('should have a chainable start() method', function() {
+    stateMachine.onChange.add(function(state, data) {
+      stateChangedTo = state;
+      stateData = data;
+    });
+    var returnValue = stateMachine.start();
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
 
 	it('should have 3 states', function() {
 		expect(stateMachine.getTotal()).to.eql(3);
 	});
 
+  it('should have a chainable create() method when passing singular state config', function() {
+    var returnValue = stateMachine.create({ name: 'FOO', transitions: [] });
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
 
 	it('should have 4 states', function() {
-		stateMachine.create({ name: 'FOO', transitions: [] });
 		expect(stateMachine.getTotal()).to.eql(4);
 	});
 
@@ -81,8 +91,9 @@ describe('state machine', function() {
 		expect(stateChangedTo).to.eql(State.CLOSED);
 	});
 
-	it('should have changed state to LOCKED', function() {
-		stateMachine.action(Action.LOCK);
+	it('should have changed state to LOCKED and action() should be chainable', function() {
+		var returnValue = stateMachine.action(Action.LOCK);
+    expect(returnValue instanceof StateMachine).to.be.true;
 		expect(stateMachine.currentState.name).to.eql(State.LOCKED);
 	});
 
@@ -102,4 +113,14 @@ describe('state machine', function() {
 		stateMachine.action(Action.OPEN);
 		expect(stateMachine.currentState.name).to.eql(State.OPENED);
 	});
+
+  it('should return a removed state', function() {
+    var removedState = stateMachine.removeState(State.CLOSED);
+    expect(removedState instanceof StateMachine.State).to.be.true;
+    expect( removedState.name ).to.eql( State.CLOSED );
+  });
+
+  it('should have decreased the total number of states after removal', function() {
+    expect(stateMachine.getTotal()).to.eql(3);
+  });
 });

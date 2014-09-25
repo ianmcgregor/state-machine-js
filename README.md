@@ -120,20 +120,20 @@ state.onChange.add(function() {
 
 ### API
 
->`StateMachine()` returns instance  
-`start()`  
-`action(action, data)`  
-`cancel()`  
-`addState(state, isInitial)` returns State  
-`removeState(stateName)`  
-`getState(stateName)` returns State  
+>`StateMachine()` returns StateMachine instance
+`start()` returns StateMachine
+`action(action, data)` returns StateMachine
+`cancel()` retruns StateMachine
+`addState(state, isInitial)` returns the added State
+`removeState(stateName)` returns the removed State
+`getState(stateName)` returns State
 `onChange` returns Signal  
 `currentState` returns State  
 `previousState` returns State  
 `states` returns array  
 `initial` returns State  
 `history` returns array  
-`create(config)` returns State  
+`create(config)` returns StateMachine
 `getTotal()` returns number
 
 
