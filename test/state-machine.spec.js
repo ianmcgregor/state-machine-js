@@ -58,13 +58,15 @@ describe('state machine', function() {
 
   it('should have a chainable create() method when passing multiple state config', function() {
     var returnValue = stateMachine.create(config);
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
 
+  it('should have a chainable start() method', function() {
     stateMachine.onChange.add(function(state, data) {
       stateChangedTo = state;
       stateData = data;
     });
-    stateMachine.start();
-
+    var returnValue = stateMachine.start();
     expect(returnValue instanceof StateMachine).to.be.true;
   });
 
@@ -89,8 +91,9 @@ describe('state machine', function() {
 		expect(stateChangedTo).to.eql(State.CLOSED);
 	});
 
-	it('should have changed state to LOCKED', function() {
-		stateMachine.action(Action.LOCK);
+	it('should have changed state to LOCKED and action() should be chainable', function() {
+		var returnValue = stateMachine.action(Action.LOCK);
+    expect(returnValue instanceof StateMachine).to.be.true;
 		expect(stateMachine.currentState.name).to.eql(State.LOCKED);
 	});
 

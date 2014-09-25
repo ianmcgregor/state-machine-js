@@ -121,9 +121,9 @@ state.onChange.add(function() {
 ### API
 
 >`StateMachine()` returns StateMachine instance
-`start()`  
-`action(action, data)`  
-`cancel()`  
+`start()` returns StateMachine
+`action(action, data)` returns StateMachine
+`cancel()` retruns StateMachine
 `addState(state, isInitial)` returns the added State
 `removeState(stateName)` returns the removed State
 `getState(stateName)` returns State
