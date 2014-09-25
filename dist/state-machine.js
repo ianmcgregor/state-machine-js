@@ -13,7 +13,7 @@ function StateMachine() {
 	this._currentState = null;
 	this._previousState = null;
 	this._cancelled = null;
-	this._hasChanged = false;
+	this._transitionComplete = false;
 	this._actionQueue = [];
 	this._history = [];
 	this._onChange = new signals.Signal();
@@ -29,7 +29,7 @@ StateMachine.prototype = {
 	},
 	action: function(action, data) {
 		// Check if current action transition is complete
-		if(!this._hasChanged) {
+		if(!this._transitionComplete) {
 			// Queue the new action and exit
 			this._actionQueue.push({
 				'action': action,
@@ -50,12 +50,7 @@ StateMachine.prototype = {
     	return this;
 	},
 	_transitionTo: function( nextState, data ) {
-		this._hasChanged = false;
-
-		if ( nextState === null ) {
-			return;
-		}
-
+		this._transitionComplete = false;
 		this._cancelled = false;
 
 		// Exit current
@@ -65,7 +60,7 @@ StateMachine.prototype = {
 
 		// Has transition been been cancelled on Exit guard?
 		if ( this._cancelled ) {
-			this._hasChanged = true;
+			this._transitionComplete = true;
 			this._cancelled = false;
 			return;
 		}
@@ -77,7 +72,7 @@ StateMachine.prototype = {
 
 		// Has transition been been cancelled on Enter guard?
 		if ( this._cancelled ) {
-			this._hasChanged = true;
+			this._transitionComplete = true;
 			this._cancelled = false;
 			return;
 		}
@@ -100,7 +95,7 @@ StateMachine.prototype = {
 		this._onChange.dispatch(this._currentState.name, data);
 
 		// Set hasChanged flag to true
-		this._hasChanged = true;
+		this._transitionComplete = true;
 
 		// Process action queue
 		this._processActionQueue();
