@@ -92,7 +92,7 @@
 
 		var stateMachine = new StateMachine();
 
-		stateMachine.factory.addMultiple(config);
+		stateMachine.create(config);
 
 		stateMachine.onChange.add(function(name, data) {
 			console.log('[State changed] name:', name, 'data:', data);
