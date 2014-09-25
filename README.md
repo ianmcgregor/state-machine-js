@@ -31,42 +31,34 @@ var Action = {
 
 var config = [
     {
-      initial: true,
-      name: State.CLOSED,
-      transitions: [
-        { action: Action.OPEN, target: State.OPENED },
-        { action: Action.LOCK, target: State.LOCKED }
-      ]
+        initial: true,
+        name: State.CLOSED,
+        transitions: [
+            { action: Action.OPEN, target: State.OPENED },
+            { action: Action.LOCK, target: State.LOCKED }
+        ]
     },
     {
-      name: State.OPENED,
-      transitions: [
-        { action: Action.CLOSE, target: State.CLOSED }
-      ]
+        name: State.OPENED,
+        transitions: [
+            { action: Action.CLOSE, target: State.CLOSED }
+        ]
     },
     {
-      name: State.LOCKED,
-      transitions: [
-        { action: Action.UNLOCK, target: State.CLOSED }
-      ]
+        name: State.LOCKED,
+        transitions: [
+            { action: Action.UNLOCK, target: State.CLOSED }
+        ]
     }
 ];
 
-// create multiple states
+// create multiple states with a config array
 stateMachine.create(config);
-
-// create single state
-var state = stateMachine.create({
-  name: State.LOCKED,
-  transitions: [
-    { action: Action.UNLOCK, target: State.CLOSED }
-  ]
-});
 
 // add listener for state change
 stateMachine.onChange.add(function(state, data) {
-console.log('State has changed to:', state);
-console.log('Got data:', data);
+    console.log('State has changed to:', state);
+    console.log('Got data:', data);
 });
 
 // start
@@ -83,11 +75,36 @@ document.body.appendChild(debugView);
 
 ```
 
-You can also add callbacks to individual states:
+States also can be created individually:
 
 ```javascript
-// via config
-{
+// create a single state
+stateMachine.create({
+    name: State.LOCKED,
+    transitions: [
+        { action: Action.UNLOCK, target: State.CLOSED }
+    ]
+});
+
+// create multiple states by chaining
+stateMachine.create({
+    name: State.LOCKED,
+    transitions: [
+        { action: Action.UNLOCK, target: State.CLOSED }
+    ]
+}).create({
+    name: State.CLOSED,
+    transitions: [
+        { action: Action.LOCK, target: State.LOCKED }
+    ]
+});
+```
+
+You can add callbacks to individual states:
+
+```javascript
+// via config object
+stateMachine.create({
 	name: 'LOCKED',
 	transitions: [
 		{ action: 'UNLOCK', target: 'CLOSED' }
@@ -103,16 +120,17 @@ You can also add callbacks to individual states:
 		// LOCKED state exiting.
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
-}
+});
 
-// or through individual states
-var state = stateMachine.create({
+// or by retrieving individual states
+stateMachine.create({
     name: 'LOCKED',
     transitions: [
         { action: 'UNLOCK', target: 'CLOSED' }
     ]
 });
 
+var state = stateMachine.getState('LOCKED');
 state.onChange.add(function() {
     // do something
 });
@@ -120,21 +138,21 @@ state.onChange.add(function() {
 
 ### API
 
->`StateMachine()` returns StateMachine instance
-`start()` returns StateMachine
-`action(action, data)` returns StateMachine
-`cancel()` retruns StateMachine
-`addState(state, isInitial)` returns the added State
-`removeState(stateName)` returns the removed State
-`getState(stateName)` returns State
+>`StateMachine()` returns StateMachine instance  
+`start()` returns StateMachine  
+`action(action, data)` returns StateMachine  
+`cancel()` returns StateMachine  
+`addState(state, isInitial)` returns the added State  
+`removeState(stateName)` returns the removed State  
+`getState(stateName)` returns State  
 `onChange` returns Signal  
 `currentState` returns State  
 `previousState` returns State  
 `states` returns array  
 `initial` returns State  
 `history` returns array  
-`create(config)` returns StateMachine
-`getTotal()` returns number
+`create(config)` returns StateMachine  
+`getTotal()` returns number  
 
 
 ### Dev Setup
