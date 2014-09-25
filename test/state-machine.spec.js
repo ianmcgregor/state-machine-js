@@ -139,13 +139,15 @@ describe('state machine', function() {
           ],
           onEnter:     function()
           {
-            if( !allowEnter )
+            if( !allowEnter ) {
               stateMachine.cancel();
+            }
           },
           onExit:      function()
           {
-            if( !allowExit )
+            if( !allowExit ) {
               stateMachine.cancel();
+            }
           }
         }
       );
@@ -170,6 +172,7 @@ describe('state machine', function() {
     it( 'should bypass transition cancellation within an onEnter', function()
     {
       allowEnter = true;
+      console.log('try to lock');
       stateMachine.action( Action.LOCK );
       expect( stateMachine.currentState.name ).to.eql( State.LOCKED );
     } );
