@@ -24,7 +24,7 @@ StateMachine.prototype = {
 			throw 'State Machine cannot start. No states defined.';
 		}
 		this._transitionTo( this._initial, null );
-    return this;
+    	return this;
 	},
 	action: function(action, data) {
 		// Check if current action transition is complete
@@ -46,7 +46,7 @@ StateMachine.prototype = {
 		if( newState ) {
 			this._transitionTo( newState, data );
 		}
-    return this;
+    	return this;
 	},
 	_transitionTo: function( nextState, data ) {
 		this._hasChanged = false;
@@ -64,6 +64,7 @@ StateMachine.prototype = {
 
 		// Has transition been been cancelled on Exit guard?
 		if ( this._cancelled ) {
+			this._hasChanged = true;
 			this._cancelled = false;
 			return;
 		}
@@ -75,6 +76,7 @@ StateMachine.prototype = {
 
 		// Has transition been been cancelled on Enter guard?
 		if ( this._cancelled ) {
+			this._hasChanged = true;
 			this._cancelled = false;
 			return;
 		}
@@ -117,7 +119,7 @@ StateMachine.prototype = {
 	},
 	cancel: function() {
 		this._cancelled = true;
-    return this;
+    	return this;
 	},
 	addState: function( state, isInitial ) {
 		if ( state === null || this._states[ state.name ]) {
@@ -135,7 +137,7 @@ StateMachine.prototype = {
 			return null;
 		}
 		delete this._states[ stateName ];
-    return state;
+    	return state;
 	},
 	getState: function(stateName) {
 		return this._states[stateName];
@@ -164,7 +166,7 @@ StateMachine.prototype = {
 			}
 		}
 		var isInitial = this.getTotal() === 0 || config.initial;
-    this.addState(state, isInitial)
+    	this.addState(state, isInitial);
 		return this;
 	},
 	getTotal: function() {

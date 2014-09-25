@@ -115,12 +115,84 @@ describe('state machine', function() {
 	});
 
   it('should return a removed state', function() {
-    var removedState = stateMachine.removeState(State.CLOSED);
+    var removedState = stateMachine.removeState(State.LOCKED);
     expect(removedState instanceof StateMachine.State).to.be.true;
-    expect( removedState.name ).to.eql( State.CLOSED );
+    expect( removedState.name ).to.eql( State.LOCKED );
   });
 
   it('should have decreased the total number of states after removal', function() {
     expect(stateMachine.getTotal()).to.eql(3);
   });
+
+  describe( 'guards', function()
+  {
+    var allowEnter,
+        allowExit;
+
+    it( 'should allow us to re-create the LOCKED state (as previously removed), but with guard methods', function()
+    {
+      stateMachine.create(
+        {
+          name:        State.LOCKED,
+          transitions: [
+            { action: Action.UNLOCK, target: State.CLOSED }
+          ],
+          onEnter:     function()
+          {
+            if( !allowEnter ) {
+              stateMachine.cancel();
+            }
+          },
+          onExit:      function()
+          {
+            if( !allowExit ) {
+              stateMachine.cancel();
+            }
+          }
+        }
+      );
+
+      expect( stateMachine.getTotal() ).to.eql( 4 );
+    } );
+
+    it( 'should start guards testing in the OPENED state and transition to CLOSED', function()
+    {
+      expect( stateMachine.currentState.name ).to.eql( State.OPENED );
+      stateMachine.action( Action.CLOSE );
+      expect( stateMachine.currentState.name ).to.eql( State.CLOSED );
+    } );
+
+    it( 'should allow transition cancellation within an onEnter', function()
+    {
+      allowEnter = false;
+      stateMachine.action( Action.LOCK );
+      expect( stateMachine.currentState.name ).to.eql( State.CLOSED );
+    } );
+
+    it( 'should bypass transition cancellation within an onEnter', function()
+    {
+      allowEnter = true;
+      console.log('try to lock');
+      stateMachine.action( Action.LOCK );
+      expect( stateMachine.currentState.name ).to.eql( State.LOCKED );
+    } );
+
+    it( 'should allow transition cancellation within an onExit', function()
+    {
+      allowExit = false;
+      stateMachine.action( Action.UNLOCK );
+      expect( stateMachine.currentState.name ).to.eql( State.LOCKED );
+    } );
+
+    it( 'should bypass transition cancellation within an onExit', function()
+    {
+      allowExit = true;
+      stateMachine.action( Action.UNLOCK );
+      expect( stateMachine.currentState.name ).to.eql( State.CLOSED );
+    } );
+
+  } );
+
+
+
 });
