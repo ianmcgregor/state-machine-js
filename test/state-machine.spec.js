@@ -56,20 +56,28 @@ describe('state machine', function() {
 		}
 	];
 
-	stateMachine.create(config);
-	stateMachine.onChange.add(function(state, data) {
-		stateChangedTo = state;
-		stateData = data;
-	});
-	stateMachine.start();
+  it('should have a chainable create() method when passing multiple state config', function() {
+    var returnValue = stateMachine.create(config);
+
+    stateMachine.onChange.add(function(state, data) {
+      stateChangedTo = state;
+      stateData = data;
+    });
+    stateMachine.start();
+
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
 
 	it('should have 3 states', function() {
 		expect(stateMachine.getTotal()).to.eql(3);
 	});
 
+  it('should have a chainable create() method when passing singular state config', function() {
+    var returnValue = stateMachine.create({ name: 'FOO', transitions: [] });
+    expect(returnValue instanceof StateMachine).to.be.true;
+  });
 
 	it('should have 4 states', function() {
-		stateMachine.create({ name: 'FOO', transitions: [] });
 		expect(stateMachine.getTotal()).to.eql(4);
 	});
 

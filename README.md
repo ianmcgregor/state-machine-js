@@ -120,7 +120,7 @@ state.onChange.add(function() {
 
 ### API
 
->`StateMachine()` returns instance  
+>`StateMachine()` returns StateMachine instance
 `start()`  
 `action(action, data)`  
 `cancel()`  
@@ -133,7 +133,7 @@ state.onChange.add(function() {
 `states` returns array  
 `initial` returns State  
 `history` returns array  
-`create(config)` returns State  
+`create(config)` returns StateMachine
 `getTotal()` returns number
 
 
