@@ -110,4 +110,14 @@ describe('state machine', function() {
 		stateMachine.action(Action.OPEN);
 		expect(stateMachine.currentState.name).to.eql(State.OPENED);
 	});
+
+  it('should return a removed state', function() {
+    var removedState = stateMachine.removeState(State.CLOSED);
+    expect(removedState instanceof StateMachine.State).to.be.true;
+    expect( removedState.name ).to.eql( State.CLOSED );
+  });
+
+  it('should have decreased the total number of states after removal', function() {
+    expect(stateMachine.getTotal()).to.eql(3);
+  });
 });

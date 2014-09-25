@@ -132,7 +132,8 @@ StateMachine.prototype = {
 		if ( state === null ) {
 			return;
 		}
-		this._states[ stateName ] = null;
+		delete this._states[ stateName ];
+    return state;
 	},
 	getState: function(stateName) {
 		return this._states[stateName];
@@ -142,7 +143,7 @@ StateMachine.prototype = {
 			config.forEach(function(item) {
 				this.create(item);
 			}, this);
-			return;
+			return this;
 		}
 		var state = new StateMachine.State(config.name);
 		var transitions = config.transitions;
@@ -161,7 +162,8 @@ StateMachine.prototype = {
 			}
 		}
 		var isInitial = this.getTotal() === 0 || config.initial;
-		return this.addState(state, isInitial);
+    this.addState(state, isInitial)
+		return this;
 	},
 	getTotal: function() {
 		return Object.keys(this.states).length;

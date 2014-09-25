@@ -124,9 +124,9 @@ state.onChange.add(function() {
 `start()`  
 `action(action, data)`  
 `cancel()`  
-`addState(state, isInitial)` returns State  
-`removeState(stateName)`  
-`getState(stateName)` returns State  
+`addState(state, isInitial)` returns the added State
+`removeState(stateName)` returns the removed State
+`getState(stateName)` returns State
 `onChange` returns Signal  
 `currentState` returns State  
 `previousState` returns State  

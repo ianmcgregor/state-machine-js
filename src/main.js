@@ -129,9 +129,10 @@ StateMachine.prototype = {
 	removeState: function( stateName ) {
 		var state = this._states[ stateName ];
 		if ( state === null ) {
-			return;
+			return null;
 		}
-		this._states[ stateName ] = null;
+		delete this._states[ stateName ];
+    return state;
 	},
 	getState: function(stateName) {
 		return this._states[stateName];
