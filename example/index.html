@@ -94,8 +94,8 @@
 
 		stateMachine.create(config);
 
-		stateMachine.onChange.add(function(name, data) {
-			console.log('[State changed] name:', name, 'data:', data);
+		stateMachine.onChange.add(function(state, data) {
+			console.log('[State changed] name:', state.name, 'data:', data);
 			console.log(stateMachine.currentState);
 		});
 

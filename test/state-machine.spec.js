@@ -63,7 +63,7 @@ describe('state machine', function() {
 
   it('should have a chainable start() method', function() {
     stateMachine.onChange.add(function(state, data) {
-      stateChangedTo = state;
+      stateChangedTo = state.name;
       stateData = data;
     });
     var returnValue = stateMachine.start();

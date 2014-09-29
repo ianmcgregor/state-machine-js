@@ -92,7 +92,7 @@ StateMachine.prototype = {
 		}
 
 		// Dispatch general Change notification
-		this._onChange.dispatch(this._currentState.name, data);
+		this._onChange.dispatch(this._currentState, data);
 
 		// Set hasChanged flag to true
 		this._transitionComplete = true;
@@ -316,8 +316,8 @@ StateMachine.DebugView = function(fsm) {
 		container.appendChild(d);
 	}
 
-	fsm.onChange.add(function(name) {
-		updateState(name);
+	fsm.onChange.add(function(state) {
+		updateState(state.name);
 	});
 
 	if(fsm.currentState) {

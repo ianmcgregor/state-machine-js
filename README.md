@@ -57,7 +57,7 @@ stateMachine.create(config);
 
 // add listener for state change
 stateMachine.onChange.add(function(state, data) {
-    console.log('State has changed to:', state);
+    console.log('State has changed to:', state.name);
     console.log('Got data:', data);
 });
 
@@ -113,7 +113,7 @@ stateMachine.create({
 		// LOCKED state entering.
 		// Possible to cancel transition in by calling stateMachine.cancel()
 	},
-	onChange: function() {
+	onChange: function(data) {
 		// App state has changed to LOCKED
 	},
 	onExit: function() {
@@ -131,7 +131,7 @@ stateMachine.create({
 });
 
 var state = stateMachine.getState('LOCKED');
-state.onChange.add(function() {
+state.onChange.add(function(data) {
     // do something
 });
 ```
