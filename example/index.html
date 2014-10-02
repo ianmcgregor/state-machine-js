@@ -88,15 +88,20 @@
 			}
 		];
 
-		console.log(StateMachine);
-
 		var stateMachine = new StateMachine();
 
 		stateMachine.create(config);
 
 		stateMachine.onChange.add(function(state, data) {
 			console.log('[State changed] name:', state.name, 'data:', data);
-			console.log(stateMachine.currentState);
+		});
+
+		stateMachine.onExit.add(function(state, data) {
+			console.log('[State exited] name:', state.name, 'data:', data);
+		});
+
+		stateMachine.onEnter.add(function(state, data) {
+			console.log('[State entering] name:', state.name, 'data:', data);
 		});
 
 		stateMachine.start();

@@ -16,6 +16,8 @@ function StateMachine() {
 	this._actionQueue = [];
 	this._history = [];
 	this._onChange = new signals.Signal();
+	this._onEnter = new signals.Signal();
+	this._onExit = new signals.Signal();
 }
 
 StateMachine.prototype = {
@@ -50,8 +52,12 @@ StateMachine.prototype = {
 		this._cancelled = false;
 
 		// Exit current
-		if ( this._currentState && this._currentState.onExit.getNumListeners() > 0 ) {
+		if ( this._currentState ) {
+			// Dispatch specific Exit notification for current State
 			this._currentState.onExit.dispatch(data);
+
+			// Dispatch general Exit notification
+			this._onExit.dispatch(this._currentState, data);
 		}
 
 		// Has transition been been cancelled on Exit guard?
@@ -61,10 +67,11 @@ StateMachine.prototype = {
 			return;
 		}
 
-		// Enter next State
-		if ( nextState.onEnter.getNumListeners() > 0 ) {
-			nextState.onEnter.dispatch(data);
-		}
+		// Dispatch specific Enter notification for next State
+		nextState.onEnter.dispatch(data);
+
+		// Dispatch general Enter notification
+		this._onEnter.dispatch(nextState, data);
 
 		// Has transition been been cancelled on Enter guard?
 		if ( this._cancelled ) {
@@ -83,9 +90,7 @@ StateMachine.prototype = {
 		this._currentState = nextState;
 
 		// Dispatch specific Change notification for this State
-		if ( nextState.onChange.getNumListeners() > 0 ) {
-			nextState.onChange.dispatch(data);
-		}
+		nextState.onChange.dispatch(data);
 
 		// Dispatch general Change notification
 		this._onChange.dispatch(this._currentState, data);
@@ -113,7 +118,7 @@ StateMachine.prototype = {
 		this._cancelled = true;
     	return this;
 	},
-	addState: function( state, isInitial ) {
+	_addState: function( state, isInitial ) {
 		if ( state === null || this._states[ state.name ]) {
 			return null;
 		}
@@ -144,8 +149,8 @@ StateMachine.prototype = {
 		var state = new StateMachine.State(config.name);
 		var transitions = config.transitions;
 		if(transitions) {
-			for (var i = 0; i < transitions.length; i++) {
-				state.addTransition(transitions[i].action, transitions[i].target);
+			transitions.forEach(function(transition) {
+				state.addTransition(transition.action, transition.target);
 				if(typeof config.onChange === 'function') {
 					state.onChange.add(config.onChange);
 				}
@@ -155,10 +160,10 @@ StateMachine.prototype = {
 				if(typeof config.onExit === 'function') {
 					state.onExit.add(config.onExit);
 				}
-			}
+			});
 		}
 		var isInitial = this.getTotal() === 0 || config.initial;
-    	this.addState(state, isInitial);
+    	this._addState(state, isInitial);
 		return this;
 	},
 	getTotal: function() {
@@ -169,6 +174,18 @@ StateMachine.prototype = {
 Object.defineProperty(StateMachine.prototype, 'onChange', {
 	get: function() {
 		return this._onChange;
+	}
+});
+
+Object.defineProperty(StateMachine.prototype, 'onEnter', {
+	get: function() {
+		return this._onEnter;
+	}
+});
+
+Object.defineProperty(StateMachine.prototype, 'onExit', {
+	get: function() {
+		return this._onExit;
 	}
 });
 
@@ -199,12 +216,6 @@ Object.defineProperty(StateMachine.prototype, 'initial', {
 Object.defineProperty(StateMachine.prototype, 'history', {
 	get: function() {
 		return this._history;
-	}
-});
-
-Object.defineProperty(StateMachine.prototype, 'factory', {
-	get: function() {
-		return this._factory;
 	}
 });
 
@@ -281,36 +292,36 @@ StateMachine.DebugView = function(fsm) {
 	}
 
 	function createButton(action) {
-		var b = document.createElement('button');
-		b.setAttribute('data-action', action);
-		b.addEventListener('click', function() {
-			var a = this.getAttribute('data-action');
-			fsm.action(a);
+		var btn = document.createElement('button');
+		btn.setAttribute('data-action', action);
+		btn.addEventListener('click', function() {
+			var action = this.getAttribute('data-action');
+			fsm.action(action);
 		});
-		b.innerHTML = action;
-		return b;
+		btn.innerHTML = action;
+		return btn;
 	}
 
-	for(var key in fsm.states) {
-		var s = fsm.states[key];
-		var d = document.createElement('div');
-		d.setAttribute('data-state', s.name);
-		d.style.display = 'none';
+	Object.keys(fsm.states).forEach(function(key) {
+		var state = fsm.states[key];
+		var el = document.createElement('div');
+		el.setAttribute('data-state', state.name);
+		el.style.display = 'none';
 
-		var h = document.createElement('h3');
-		h.innerHTML = 'State: ' + s.name;
-		d.appendChild(h);
+		var name = document.createElement('h3');
+		name.innerHTML = 'State: ' + state.name;
+		el.appendChild(name);
 
-		var transitions = s.transitions;
-		if(transitions) {
-			for(var a in transitions) {
-				if(transitions.hasOwnProperty(a)) {
-					d.appendChild(createButton(a));
+		var transitions = state.transitions;
+		if (transitions) {
+			Object.keys(transitions).forEach(function(key) {
+				if(transitions.hasOwnProperty(key)) {
+					el.appendChild(createButton(key));
 				}
-			}
+			});
 		}
-		container.appendChild(d);
-	}
+		container.appendChild(el);
+	});
 
 	fsm.onChange.add(function(state) {
 		updateState(state.name);

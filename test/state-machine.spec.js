@@ -133,7 +133,7 @@ describe('state machine', function() {
     {
       stateMachine.create(
         {
-          name:        State.LOCKED,
+          name: State.LOCKED,
           transitions: [
             { action: Action.UNLOCK, target: State.CLOSED }
           ],
@@ -189,6 +189,22 @@ describe('state machine', function() {
       stateMachine.action( Action.UNLOCK );
       expect( stateMachine.currentState.name ).to.eql( State.CLOSED );
     } );
+
+    it('should receive global onEnter and onExit signals', function() {
+      var stateExited;
+      stateMachine.onExit.addOnce(function(state) {
+        stateExited = state.name;
+      });
+      var stateEntered;
+      stateMachine.onEnter.addOnce(function(state) {
+        stateEntered = state.name;
+      });
+      var prevState = State.CLOSED;
+      var newState = State.LOCKED;
+      stateMachine.action(Action.LOCK);
+      expect(stateExited).to.eql(prevState);
+      expect(stateEntered).to.eql(newState);
+    });
 
   } );
 

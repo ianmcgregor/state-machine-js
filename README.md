@@ -75,7 +75,7 @@ document.body.appendChild(debugView);
 
 ```
 
-States also can be created individually:
+States can be created individually:
 
 ```javascript
 // create a single state
@@ -100,10 +100,50 @@ stateMachine.create({
 });
 ```
 
-You can add callbacks to individual states:
+You can add callbacks to receive notifications when the State Machine is entering or exiting a State and optionally cancel the transition:
 
 ```javascript
-// via config object
+// add listener for state enter
+stateMachine.onEnter.add(function(state, data) {
+    console.log('State will change to:', state.name);
+    // unless:
+    if(someCondition) {
+        stateMachine.cancel(); // will not enter this State
+    }
+});
+
+// add listener for state exit
+stateMachine.onExit.add(function(state, data) {
+    console.log('State will change from:', state.name);
+    // unless:
+    if(someCondition) {
+        stateMachine.cancel(); // will not exit this State
+    }
+});
+```
+
+You can also add optional callbacks to individual states:
+
+```javascript
+// by retrieving individual states
+var state = stateMachine.getState('LOCKED');
+
+// entering LOCKED State:
+state.onEnter.add(function(data) {
+    // do something
+});
+
+// in LOCKED State:
+state.onChange.add(function(data) {
+    // do something
+});
+
+// exiting LOCKED State:
+state.onExit.add(function(data) {
+    // do something
+});
+
+// or via config object
 stateMachine.create({
 	name: 'LOCKED',
 	transitions: [
@@ -121,38 +161,41 @@ stateMachine.create({
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
 });
-
-// or by retrieving individual states
-stateMachine.create({
-    name: 'LOCKED',
-    transitions: [
-        { action: 'UNLOCK', target: 'CLOSED' }
-    ]
-});
-
-var state = stateMachine.getState('LOCKED');
-state.onChange.add(function(data) {
-    // do something
-});
 ```
 
 ### API
 
->`StateMachine()` returns StateMachine instance  
-`start()` returns StateMachine  
-`action(action, data)` returns StateMachine  
-`cancel()` returns StateMachine  
-`addState(state, isInitial)` returns the added State  
-`removeState(stateName)` returns the removed State  
-`getState(stateName)` returns State  
-`onChange` returns Signal  
-`currentState` returns State  
-`previousState` returns State  
-`states` returns array  
-`initial` returns State  
-`history` returns array  
-`create(config)` returns StateMachine  
-`getTotal()` returns number  
+Methods
+
+>`create(config)` create new States  
+`start() returns StateMachine` starts State Machine, transitioning to 'initial' State  
+`action(action, data) returns StateMachine` initiates a State transition  
+`cancel() returns StateMachine` cancels the current transition  
+`getState(stateName) returns State` retrieve a State  
+`removeState(stateName) returns State` remove a State  
+`getTotal() returns number` total number of States defined  
+
+Getters
+
+>`currentState returns State`  
+`previousState returns State`  
+`states returns Object`  
+`initial returns State` the initial State  
+`history returns array` array of State names (strings)  
+
+Callbacks
+
+>`onChange.add(callback, context)` add callback when State has changed  
+`onEnter.add(callback, context)` add callback when entering a State  
+`onExit.add(callback, context)` add callback when exiting a State  
+
+>`onChange.remove(callback, context)` remove callback  
+`onEnter.remove(callback, context)` remove callback  
+`onExit.remove(callback, context)` remove callback  
+
+>`onChange.removeAll()` remove all callbacks  
+`onEnter.removeAll()` remove all callbacks  
+`onExit.removeAll()` remove all callbacks  
 
 
 ### Dev Setup
