@@ -36,10 +36,7 @@ StateMachine.prototype = {
 			});
 			return this;
 		}
-		// Check if we're already in the correct state
-		if (this._currentState && this._currentState.getTarget(action) === this._currentState.name) {
-			return this;
-		}
+		// Attempt to retrieve the new State
 		var newStateTarget = this._currentState.getTarget( action );
 		var newState = this._states[ newStateTarget ];
 		// Only transition if there's a state associated with the action
