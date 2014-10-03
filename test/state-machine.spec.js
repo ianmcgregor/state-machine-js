@@ -7,9 +7,13 @@ describe('state machine', function() {
 	var stateMachine = new StateMachine(),
 		stateChangedTo = '',
 		stateData,
-		gotEnterNotification = false,
-		gotChangeNotification = false,
-		gotExitNotification = false;
+    changeAction,
+		individualEnterNotification = false,
+		individualChangeNotification = false,
+		individualExitNotification = false,
+    individualEnterAction = null,
+    individualChangeAction = null,
+    individualExitAction = null;
 
 	var State = {
 		CLOSED: 'CLOSED',
@@ -32,27 +36,54 @@ describe('state machine', function() {
 				{ action: Action.OPEN, target: State.OPENED },
 				{ action: Action.LOCK, target: State.LOCKED }
 			],
-			onEnter: function() {
-				gotEnterNotification = true;
+			onEnter: function(data, action) {
+				individualEnterNotification = true;
+				individualEnterAction = action;
 			},
-			onChange: function() {
-				gotChangeNotification = true;
+			onChange: function(data, action) {
+				individualChangeNotification = true;
+        individualChangeAction = action;
 			},
-			onExit: function() {
-				gotExitNotification = true;
+			onExit: function(data, action) {
+				individualExitNotification = true;
+        individualExitAction = action;
 			}
 		},
 		{
 			name: State.OPENED,
 			transitions: [
 				{ action: Action.CLOSE, target: State.CLOSED }
-			]
+			],
+      onEnter: function(data, action) {
+        individualEnterNotification = true;
+        individualEnterAction = action;
+      },
+      onChange: function(data, action) {
+        individualChangeNotification = true;
+        individualChangeAction = action;
+      },
+      onExit: function(data, action) {
+        individualExitNotification = true;
+        individualExitAction = action;
+      }
 		},
 		{
 			name: State.LOCKED,
 			transitions: [
 				{ action: Action.UNLOCK, target: State.CLOSED }
-			]
+			],
+      onEnter: function(data, action) {
+        individualEnterNotification = true;
+        individualEnterAction = action;
+      },
+      onChange: function(data, action) {
+        individualChangeNotification = true;
+        individualChangeAction = action;
+      },
+      onExit: function(data, action) {
+        individualExitNotification = true;
+        individualExitAction = action;
+      }
 		}
 	];
 
@@ -62,9 +93,10 @@ describe('state machine', function() {
   });
 
   it('should have a chainable start() method', function() {
-    stateMachine.onChange.add(function(state, data) {
+    stateMachine.onChange.add(function(state, data, action) {
       stateChangedTo = state.name;
       stateData = data;
+      changeAction = action;
     });
     var returnValue = stateMachine.start();
     expect(returnValue instanceof StateMachine).to.be.true;
@@ -87,8 +119,11 @@ describe('state machine', function() {
 		expect(stateMachine.currentState.name).to.eql(State.CLOSED);
 	});
 
-	it('should have received general onChange signal', function() {
-		expect(stateChangedTo).to.eql(State.CLOSED);
+	it('should have received general onChange signal for initial state', function() {
+		expect(stateChangedTo, 'state is correct').to.eql(State.CLOSED);
+
+    // Action should be undefined, as we're in the init state
+		expect(changeAction, 'action is undefined').to.be.undefined;
 	});
 
 	it('should have changed state to LOCKED and action() should be chainable', function() {
@@ -97,16 +132,30 @@ describe('state machine', function() {
 		expect(stateMachine.currentState.name).to.eql(State.LOCKED);
 	});
 
+  it('should have received general onChange signal for subsequent state', function() {
+    expect(stateChangedTo, 'state is correct').to.eql(State.LOCKED);
+
+    // Action should be undefined, as we're in the init state
+    expect(changeAction, 'action is undefined').to.eql( Action.LOCK );
+  });
+
 	it('should have got individual state notifications', function() {
-		expect(gotEnterNotification).to.be.true;
-		expect(gotChangeNotification).to.be.true;
-		expect(gotExitNotification).to.be.true;
+		expect(individualEnterNotification, 'individual enter notification').to.be.true;
+		expect(individualChangeNotification, 'individual change notification').to.be.true;
+		expect(individualExitNotification, 'individual exit notification').to.be.true;
 	});
 
-	it('should have changed state to CLOSED with data', function() {
+  it('should have action passed to individual state callbacks', function() {
+    expect(individualEnterAction, 'individual enter action').to.eql( Action.LOCK );
+    expect(individualChangeAction, 'individual change action').to.eql( Action.LOCK );
+    expect(individualExitAction, 'individual exit action').to.eql( Action.LOCK );
+  });
+
+	it('should have changed state to CLOSED with data and action', function() {
 		stateMachine.action(Action.UNLOCK, { info: 'Hello' });
-		expect(stateMachine.currentState.name).to.eql(State.CLOSED);
-		expect(stateData.info).to.eql('Hello');
+		expect(stateMachine.currentState.name, 'state name is correct').to.eql(State.CLOSED);
+		expect(stateData.info, 'data is correct').to.eql('Hello');
+		expect(changeAction, 'action is correct').to.eql(Action.UNLOCK);
 	});
 
 	it('should have changed state to OPENED', function() {
@@ -191,19 +240,25 @@ describe('state machine', function() {
     } );
 
     it('should receive global onEnter and onExit signals', function() {
-      var stateExited;
-      stateMachine.onExit.addOnce(function(state) {
+      var stateExited, actionExited;
+      stateMachine.onExit.addOnce(function(state, data, action) {
         stateExited = state.name;
+        actionExited = action;
       });
-      var stateEntered;
-      stateMachine.onEnter.addOnce(function(state) {
+
+      var stateEntered, actionEntered;
+      stateMachine.onEnter.addOnce(function(state, data, action) {
         stateEntered = state.name;
+        actionEntered = action;
       });
       var prevState = State.CLOSED;
       var newState = State.LOCKED;
       stateMachine.action(Action.LOCK);
-      expect(stateExited).to.eql(prevState);
-      expect(stateEntered).to.eql(newState);
+
+      expect(stateExited, 'received stateExited').to.eql(prevState);
+      expect(actionExited, 'received actionExited').to.eql(Action.LOCK);
+      expect(stateEntered, 'received stateEntered').to.eql(newState);
+      expect(actionEntered, 'received actionEntered').to.eql(Action.LOCK);
     });
 
   } );
