@@ -67,7 +67,7 @@ stateMachine.start(); // state changed to 'CLOSED' because that state has 'initi
 
 // state will change to 'LOCKED':
 stateMachine.action(Action.LOCK);
-// state won't change - no valid transition to 'CLOSE' from 'LOCKED':
+// state won't change - no valid transition to 'CLOSED' from 'LOCKED':
 stateMachine.action(Action.CLOSE);
 // state will change to 'CLOSED', data payload sent through:
 stateMachine.action(Action.UNLOCK, { foo: 'bar' });
