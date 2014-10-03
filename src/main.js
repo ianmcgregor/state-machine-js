@@ -43,21 +43,21 @@ StateMachine.prototype = {
 		var newState = this._states[ newStateTarget ];
 		// Only transition if there's a state associated with the action
 		if( newState ) {
-			this._transitionTo( newState, data );
+			this._transitionTo( newState, data, action );
 		}
     	return this;
 	},
-	_transitionTo: function( nextState, data ) {
+	_transitionTo: function( nextState, data, action ) {
 		this._transitionComplete = false;
 		this._cancelled = false;
 
 		// Exit current
 		if ( this._currentState ) {
 			// Dispatch specific Exit notification for current State
-			this._currentState.onExit.dispatch(data);
+			this._currentState.onExit.dispatch(data, action);
 
 			// Dispatch general Exit notification
-			this._onExit.dispatch(this._currentState, data);
+			this._onExit.dispatch(this._currentState, data, action);
 		}
 
 		// Has transition been been cancelled on Exit guard?
@@ -68,10 +68,10 @@ StateMachine.prototype = {
 		}
 
 		// Dispatch specific Enter notification for next State
-		nextState.onEnter.dispatch(data);
+		nextState.onEnter.dispatch(data, action);
 
 		// Dispatch general Enter notification
-		this._onEnter.dispatch(nextState, data);
+		this._onEnter.dispatch(nextState, data, action);
 
 		// Has transition been been cancelled on Enter guard?
 		if ( this._cancelled ) {
@@ -90,10 +90,10 @@ StateMachine.prototype = {
 		this._currentState = nextState;
 
 		// Dispatch specific Change notification for this State
-		nextState.onChange.dispatch(data);
+		nextState.onChange.dispatch(data, action);
 
 		// Dispatch general Change notification
-		this._onChange.dispatch(this._currentState, data);
+		this._onChange.dispatch(this._currentState, data, action);
 
 		// Set hasChanged flag to true
 		this._transitionComplete = true;
