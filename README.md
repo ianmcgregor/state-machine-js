@@ -56,9 +56,10 @@ var config = [
 stateMachine.create(config);
 
 // add listener for state change
-stateMachine.onChange.add(function(state, data) {
+stateMachine.onChange.add(function(state, data, action) {
     console.log('State has changed to:', state.name);
     console.log('Got data:', data);
+    console.log('Got triggering action:', action);
 });
 
 // start
@@ -104,7 +105,7 @@ You can add callbacks to receive notifications when the State Machine is enterin
 
 ```javascript
 // add listener for state enter
-stateMachine.onEnter.add(function(state, data) {
+stateMachine.onEnter.add(function(state, data, action) {
     console.log('State will change to:', state.name);
     // unless:
     if(someCondition) {
@@ -113,7 +114,7 @@ stateMachine.onEnter.add(function(state, data) {
 });
 
 // add listener for state exit
-stateMachine.onExit.add(function(state, data) {
+stateMachine.onExit.add(function(state, data, action) {
     console.log('State will change from:', state.name);
     // unless:
     if(someCondition) {
@@ -129,17 +130,17 @@ You can also add optional callbacks to individual states:
 var state = stateMachine.getState('LOCKED');
 
 // entering LOCKED State:
-state.onEnter.add(function(data) {
+state.onEnter.add(function(data, action) {
     // do something
 });
 
 // in LOCKED State:
-state.onChange.add(function(data) {
+state.onChange.add(function(data, action) {
     // do something
 });
 
 // exiting LOCKED State:
-state.onExit.add(function(data) {
+state.onExit.add(function(data, action) {
     // do something
 });
 
@@ -149,14 +150,14 @@ stateMachine.create({
 	transitions: [
 		{ action: 'UNLOCK', target: 'CLOSED' }
 	],
-	onEnter: function() {
+	onEnter: function(data, action) {
 		// LOCKED state entering.
 		// Possible to cancel transition in by calling stateMachine.cancel()
 	},
-	onChange: function(data) {
+	onChange: function(data, action) {
 		// App state has changed to LOCKED
 	},
-	onExit: function() {
+	onExit: function(data, action) {
 		// LOCKED state exiting.
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
