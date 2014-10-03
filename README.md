@@ -65,10 +65,12 @@ stateMachine.onChange.add(function(state, data, action) {
 // start
 stateMachine.start(); // state changed to 'CLOSED' because that state has 'initial' flag
 
-// update
-stateMachine.action(Action.LOCK); // state changed to 'LOCKED'
-stateMachine.action(Action.CLOSE); // state didn't change - no valid transition for 'CLOSE' from 'LOCKED'
-stateMachine.action(Action.UNLOCK, { foo: 'bar' }); // state changed to 'CLOSED', date sent through
+// state will change to 'LOCKED':
+stateMachine.action(Action.LOCK);
+// state won't change - no valid transition to 'CLOSE' from 'LOCKED':
+stateMachine.action(Action.CLOSE);
+// state will change to 'CLOSED', data payload sent through:
+stateMachine.action(Action.UNLOCK, { foo: 'bar' });
 
 // debug view with info and buttons to change state
 var debugView = new StateMachine.DebugView(stateMachine);
@@ -129,19 +131,18 @@ You can also add optional callbacks to individual states:
 // by retrieving individual states
 var state = stateMachine.getState('LOCKED');
 
-// entering LOCKED State:
 state.onEnter.add(function(state, data, action) {
-    // do something
+    // entering LOCKED State
+    // Possible to cancel transition in by calling stateMachine.cancel()
 });
 
-// in LOCKED State:
 state.onChange.add(function(state, data, action) {
-    // do something
+    // in LOCKED State
 });
 
-// exiting LOCKED State:
 state.onExit.add(function(state, data, action) {
-    // do something
+    // exiting LOCKED State
+    // Possible to cancel transition out by calling stateMachine.cancel()
 });
 
 // or via config object
@@ -151,14 +152,14 @@ stateMachine.create({
 		{ action: 'UNLOCK', target: 'CLOSED' }
 	],
 	onEnter: function(state, data, action) {
-		// LOCKED state entering.
+		// entering LOCKED state
 		// Possible to cancel transition in by calling stateMachine.cancel()
 	},
 	onChange: function(state, data, action) {
-		// App state has changed to LOCKED
+		// in LOCKED state
 	},
 	onExit: function(state, data, action) {
-		// LOCKED state exiting.
+		// exiting LOCKED state
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
 });
