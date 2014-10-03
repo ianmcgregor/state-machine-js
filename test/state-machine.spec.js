@@ -13,7 +13,10 @@ describe('state machine', function() {
 		individualExitNotification = false,
     individualEnterAction = null,
     individualChangeAction = null,
-    individualExitAction = null;
+    individualExitAction = null,
+    individualEnterState = null,
+    individualChangeState = null,
+    individualExitState = null;
 
 	var State = {
 		CLOSED: 'CLOSED',
@@ -36,16 +39,19 @@ describe('state machine', function() {
 				{ action: Action.OPEN, target: State.OPENED },
 				{ action: Action.LOCK, target: State.LOCKED }
 			],
-			onEnter: function(data, action) {
+			onEnter: function(state, data, action) {
 				individualEnterNotification = true;
+				individualEnterState = state;
 				individualEnterAction = action;
 			},
-			onChange: function(data, action) {
+			onChange: function(state, data, action) {
 				individualChangeNotification = true;
+        individualChangeState = state;
         individualChangeAction = action;
 			},
-			onExit: function(data, action) {
+			onExit: function(state, data, action) {
 				individualExitNotification = true;
+        individualExitState = state;
         individualExitAction = action;
 			}
 		},
@@ -54,16 +60,19 @@ describe('state machine', function() {
 			transitions: [
 				{ action: Action.CLOSE, target: State.CLOSED }
 			],
-      onEnter: function(data, action) {
+      onEnter: function(state, data, action) {
         individualEnterNotification = true;
+        individualEnterState = state;
         individualEnterAction = action;
       },
-      onChange: function(data, action) {
+      onChange: function(state, data, action) {
         individualChangeNotification = true;
+        individualChangeState = state;
         individualChangeAction = action;
       },
-      onExit: function(data, action) {
+      onExit: function(state, data, action) {
         individualExitNotification = true;
+        individualExitState = state;
         individualExitAction = action;
       }
 		},
@@ -72,16 +81,19 @@ describe('state machine', function() {
 			transitions: [
 				{ action: Action.UNLOCK, target: State.CLOSED }
 			],
-      onEnter: function(data, action) {
+      onEnter: function(state, data, action) {
         individualEnterNotification = true;
+        individualEnterState = state;
         individualEnterAction = action;
       },
-      onChange: function(data, action) {
+      onChange: function(state, data, action) {
         individualChangeNotification = true;
+        individualChangeState = state;
         individualChangeAction = action;
       },
-      onExit: function(data, action) {
+      onExit: function(state, data, action) {
         individualExitNotification = true;
+        individualExitState = state;
         individualExitAction = action;
       }
 		}
@@ -149,6 +161,12 @@ describe('state machine', function() {
     expect(individualEnterAction, 'individual enter action').to.eql( Action.LOCK );
     expect(individualChangeAction, 'individual change action').to.eql( Action.LOCK );
     expect(individualExitAction, 'individual exit action').to.eql( Action.LOCK );
+  });
+
+  it('should have state passed to individual state callbacks', function() {
+    expect(individualEnterState.name, 'individual enter state').to.eql( State.LOCKED );
+    expect(individualChangeState.name, 'individual change state').to.eql( State.LOCKED );
+    expect(individualExitState.name, 'individual exit state').to.eql( State.CLOSED );
   });
 
 	it('should have changed state to CLOSED with data and action', function() {

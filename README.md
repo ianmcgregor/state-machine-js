@@ -130,17 +130,17 @@ You can also add optional callbacks to individual states:
 var state = stateMachine.getState('LOCKED');
 
 // entering LOCKED State:
-state.onEnter.add(function(data, action) {
+state.onEnter.add(function(state, data, action) {
     // do something
 });
 
 // in LOCKED State:
-state.onChange.add(function(data, action) {
+state.onChange.add(function(state, data, action) {
     // do something
 });
 
 // exiting LOCKED State:
-state.onExit.add(function(data, action) {
+state.onExit.add(function(state, data, action) {
     // do something
 });
 
@@ -150,14 +150,14 @@ stateMachine.create({
 	transitions: [
 		{ action: 'UNLOCK', target: 'CLOSED' }
 	],
-	onEnter: function(data, action) {
+	onEnter: function(state, data, action) {
 		// LOCKED state entering.
 		// Possible to cancel transition in by calling stateMachine.cancel()
 	},
-	onChange: function(data, action) {
+	onChange: function(state, data, action) {
 		// App state has changed to LOCKED
 	},
-	onExit: function(data, action) {
+	onExit: function(state, data, action) {
 		// LOCKED state exiting.
 		// Possible to cancel transition out by calling stateMachine.cancel()
 	}
