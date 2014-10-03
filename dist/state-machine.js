@@ -55,7 +55,7 @@ StateMachine.prototype = {
 		// Exit current
 		if ( this._currentState ) {
 			// Dispatch specific Exit notification for current State
-			this._currentState.onExit.dispatch(data, action);
+			this._currentState.onExit.dispatch(this._currentState, data, action);
 
 			// Dispatch general Exit notification
 			this._onExit.dispatch(this._currentState, data, action);
@@ -69,7 +69,7 @@ StateMachine.prototype = {
 		}
 
 		// Dispatch specific Enter notification for next State
-		nextState.onEnter.dispatch(data, action);
+		nextState.onEnter.dispatch(nextState, data, action);
 
 		// Dispatch general Enter notification
 		this._onEnter.dispatch(nextState, data, action);
@@ -91,7 +91,7 @@ StateMachine.prototype = {
 		this._currentState = nextState;
 
 		// Dispatch specific Change notification for this State
-		nextState.onChange.dispatch(data, action);
+		nextState.onChange.dispatch(this._currentState, data, action);
 
 		// Dispatch general Change notification
 		this._onChange.dispatch(this._currentState, data, action);
